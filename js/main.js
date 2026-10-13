@@ -25,9 +25,15 @@ async function pickRecipe(food) {
     }
 }
 
+//Validation av formuläret
+function validateForm (){
+    if(search.value.trim() != ""){return true;}
+    else{false}
+}
+
 
 form.addEventListener("submit", function(event){
     event.preventDefault();
 
-    pickRecipe(search.value);
+    if(validateForm()){pickRecipe(search.value);}
 })
