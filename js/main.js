@@ -4,9 +4,30 @@
  * Namn: Jingye Chen
  */
 
+//Hämta element från DOM
 const form = document.querySelector("#searchform");
 const search = document.querySelector("#search");
 
 const error = document.querySelector("#error");
 const errorAPI = document.querySelector("#message");
 const recipe = document.querySelector("#recipe");
+
+//Hämta recept från dummyjson webbtjänst
+async function pickRecipe(food) {
+    try{
+        const response = await fetch(`https://dummyjson.com/recipes/search?q=${food}`)
+        const data = await response.json();
+
+        console.log(data);
+    }
+    catch(error){
+        console.log(error);
+    }
+}
+
+
+form.addEventListener("submit", function(event){
+    event.preventDefault();
+
+    pickRecipe(search.value);
+})
