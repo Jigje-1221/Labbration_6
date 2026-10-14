@@ -148,6 +148,10 @@ function wirteRecipe(recept){
 form.addEventListener("submit", async function(event){
     event.preventDefault();
 
+    error.innerHTML = "";
+    errorAPI.innerHTML = "";
+    recipe.innerHTML = "";
+    
     if(validateForm()){
         const recept = await pickRecipe(search.value);
         wirteRecipe(recept)
