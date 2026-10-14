@@ -14,7 +14,7 @@ const errorAPI = document.querySelector("#message");
 const recipe = document.querySelector("#recipe");
 
 //Hämta recept från dummyjson webbtjänst
-async function pickRecipe(food) {
+async function getRecipes(food) {
     try{
         //Hämta recept från API
         const response = await fetch(`https://dummyjson.com/recipes/search?q=${food}`)
@@ -27,18 +27,14 @@ async function pickRecipe(food) {
         //Omvandlar data från json till javascript array
         const data = await response.json();
 
-        //Kontrollera om det finns resultat som matchade annas skriva ut felmedelande
-        if(validateSearch(data)){
-            return data.recipes[0];
-        }
-        else{
-            errorAPI.innerHTML = "Inget recept hittades, prova en ny sökfras.."
-        }
+        //Retunera den första recept av sökfras
+        return data;
     }
     catch(error){
         errorAPI.innerHTML = "Kunde inte hämta recept.. Försök igen senare";
     }
 }
+
 
 //Validation av formuläret
 function validateForm (){
@@ -51,18 +47,17 @@ function wirteErrorForm (){
     error.innerHTML = "Du måste fylla i en sökfras!"
 }
 
-//Validera så att sköresultat inte är 0
-function validateSearch (foods){
-    if(foods.recipes.length === 0){return false}
+//Kontrollera att sköresultat inte är 0
+async function validateSearch (food){
+    let data = await getRecipes(food)
+    if(data.recipes.length === 0){return false}
     else{return true}
 }
 
 function wirteRecipe(recept){
-    console.log(recept)
     
     //En array som innerhåller alla element som kommer inkluderas i article
     let elements = []; 
-    console.log(elements)
 
     //Skapa elementer
     let article = document.createElement("article");
@@ -140,7 +135,7 @@ function wirteRecipe(recept){
     //Lägg till elementer inom article
     for(let i = 0; i < elements.length; i ++){
         article.appendChild(elements[i]);
-    }
+    };
 }
 
 
@@ -151,10 +146,16 @@ form.addEventListener("submit", async function(event){
     error.innerHTML = "";
     errorAPI.innerHTML = "";
     recipe.innerHTML = "";
-    
+
     if(validateForm()){
-        const recept = await pickRecipe(search.value);
-        wirteRecipe(recept)
+        if(validateSearch(search.value)){
+            const data = await getRecipes(search.value)
+            const recept = data.recipes[0];
+            wirteRecipe(recept);
+        }
+        else{
+            errorAPI.innerHTML = "Inget recept hittades, prova en ny sökfras.."
+        }
     }
     else{
         wirteErrorForm()
