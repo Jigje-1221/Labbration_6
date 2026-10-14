@@ -148,8 +148,8 @@ form.addEventListener("submit", async function(event){
     recipe.innerHTML = "";
 
     if(validateForm()){
-        if(validateSearch(search.value)){
-            const data = await getRecipes(search.value)
+        if(await validateSearch(search.value)){
+            const data = await getRecipes(search.value);
             const recept = data.recipes[0];
             wirteRecipe(recept);
         }
