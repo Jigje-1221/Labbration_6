@@ -1,4 +1,5 @@
 "use strict";
+
 /*
  * Laboration 6 - Receptsökaren
  * Namn: Jingye Chen
@@ -28,11 +29,10 @@ async function pickRecipe(food) {
 
         //Kontrollera om det finns resultat som matchade annas skriva ut felmedelande
         if(validateSearch(data)){
-            console.log(true)
-            return data[0];
+            return data.recipes[0];
         }
         else{
-            console.log(false)
+            errorAPI.innerHTML = "Inget recept hittades, prova en ny sökfras.."
         }
     }
     catch(error){
@@ -57,13 +57,100 @@ function validateSearch (foods){
     else{return true}
 }
 
+function wirteRecipe(recept){
+    console.log(recept)
+    
+    //En array som innerhåller alla element som kommer inkluderas i article
+    let elements = []; 
+    console.log(elements)
+
+    //Skapa elementer
+    let article = document.createElement("article");
+    let h3 = document.createElement("h3");
+    let img = document.createElement("img");
+    let div = document.createElement("div");
+    let ingredientsTitle = document.createElement("h4");
+    let ingredients = document.createElement("ul");
+    let instructionsTitle = document.createElement("h4");
+    let instructions = document.createElement("ol");
+
+    //Lägg till element som ska inkluderas i article inom array
+    elements.push(h3, img, div, ingredientsTitle, ingredients, instructionsTitle,instructions)
+
+    //Skapa innehåller  för olika element
+    h3.textContent = recept.name;
+    img.src = recept.image;
+    img.alt = recept.name;
+    ingredientsTitle.textContent = "Ingredients";
+    instructionsTitle.textContent = "Instructions";
+
+    //Lägg till klass till div
+    div.classList.add("recipe-info");
+
+    //Loop som skapa och lägg till innehåller till div
+    for(let i = 0; i < 4; i ++){
+        let text = "";
+        let data = "";
+
+        switch(i){
+        case 0:
+            text = "Servings:"
+            data = recept.servings;
+            break;
+        case 1:
+            text = "Prep time:"
+            data = recept.prepTimeMinutes;
+            break;
+        case 2:
+            text = "Cooking time:"
+            data = recept.cookTimeMinutes;
+            break;
+        case 3:
+            text = "Difficulty:"
+            data = recept.difficulty
+        }
+
+        let p = document.createElement("p")
+        let strong = document.createElement("strong")
+
+        p.appendChild(strong)
+        strong.textContent = text;
+        p.textContent += data;
+
+        div.appendChild(p)
+    }
+
+    //Loop som går genom ingrediens om recept och lägg de in i listan
+    recept.ingredients.forEach(function(ingredient) {
+        let li = document.createElement("li");
+        li.textContent = ingredient;
+        ingredients.appendChild(li);
+    });
+
+    //Loop som går genom instruktion om recept och lägg de in i listan
+    recept.instructions.forEach(function(instruction) {
+        let li = document.createElement("li");
+        li.textContent = instruction;
+        instructions.appendChild(li);
+    });
+
+    //Lägg till article inom recipe
+    recipe.appendChild(article);
+
+    //Lägg till elementer inom article
+    for(let i = 0; i < elements.length; i ++){
+        article.appendChild(elements[i]);
+    }
+}
 
 
-form.addEventListener("submit", function(event){
+
+form.addEventListener("submit", async function(event){
     event.preventDefault();
 
     if(validateForm()){
-        pickRecipe(search.value);
+        const recept = await pickRecipe(search.value);
+        wirteRecipe(recept)
     }
     else{
         wirteErrorForm()
